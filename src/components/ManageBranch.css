@@ -1,0 +1,19 @@
+.manage-branch-container {
+    margin: 20px;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  .actions {
+    display: flex;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+  }
+  
+  .manage-branch-container {
+    margin: 20px;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
