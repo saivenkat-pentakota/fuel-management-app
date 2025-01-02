@@ -1,6 +1,18 @@
+/* Sidebar Container */
+.sidebar {
+  width: 220px;
+  background-color: #f8f9fa;
+  padding: 15px;
+  height: 100vh;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Logo Section */
 .sidebar-logo {
   display: flex;
   flex-direction: row;
+  align-items: center;
+  margin-bottom: 20px;
 }
 
 .short-logo {
@@ -9,24 +21,32 @@
 
 .full-logo {
   width: 120px;
+  margin-left: 10px;
 }
 
+/* Sidebar List Items */
 .sidebar ul {
   list-style: none;
-  padding: 15px;
+  padding: 0;
+  margin: 0;
 }
 
 .sidebar li {
-  font-size: 22px;
+  font-size: 18px;
   margin-bottom: 10px;
   position: relative;
   border-radius: 5px;
   padding: 10px 15px;
-  transition: background-color 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px; 
+  transition: background-color 0.3s, color 0.3s;
 }
 
 .sidebar li:hover {
-  background-color: lightgrey;
+  background-color: #e9ecef;
+  cursor: pointer;
 }
 
 .sidebar a {
@@ -37,16 +57,26 @@
 }
 
 .sidebar a:hover {
-  color: lightgrey;
+  color: #007bff;
 }
 
 .sidebar a svg {
   margin-right: 10px;
 }
 
+/* Active Item Styling */
+.sidebar .active {
+  
+  color: black !important;
+}
+
+.sidebar .active a {
+  color: white !important;
+}
+
+/* Masters Menu */
 .masters-item {
   display: flex;
-  flex-direction: column;
   cursor: pointer;
 }
 
@@ -54,30 +84,32 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-}
+  }
 
-.master-link svg {
-  margin-left: auto;
-}
+
 
 .chevron-icon {
   font-size: 18px;
 }
 
+/* Submenu Styling */
 .sub-menu {
   display: block;
-  margin-left: 20px;
-  margin-top: 10px;
 }
 
 .sub-menu-item {
   padding: 10px;
   border-radius: 5px;
-  transition: background-color 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 10px; /* Spacing between icon and text */
+  transition: background-color 0.3s, color 0.3s;
 }
 
 .sub-menu-item:hover {
-  background-color: lightgrey;
+  background-color: #e9ecef;
+  color: #007bff;
+  cursor: pointer;
 }
 
 .sub-menu-item.active {
@@ -89,7 +121,7 @@
   color: white;
 }
 
-.sub-menu-item a {
-  color: inherit;
-  text-decoration: none;
+/* Help Section */
+.sidebar li:last-child {
+  margin-top: 20px;
 }
