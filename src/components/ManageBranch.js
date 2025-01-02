@@ -224,7 +224,7 @@ const ManageBranch = () => {
             if (selectedBranch) {
               const updatedData = submittedData.map((branch) =>
                 branch.branchCode === selectedBranch.branchCode
-                  ? newBranch
+                  ? { ...branch, ...newBranch } 
                   : branch
               );
               setSubmittedData(updatedData);
