@@ -1,25 +1,23 @@
+/* Add this to your App.css file */
+
 .container {
-  display: flex;
-  flex-direction: column; 
+  display: flex; 
+  flex-direction: row;
 }
 
 @media (min-width: 768px) {
-  .container {
-    flex-direction: row;
-  }
-
   .sidebar {
     position: fixed; 
     height: 100vh; 
     width: 200px; 
     padding: 20px;
-    background-color: #f0f0f0;
+    background-color: white; 
+    border-right: 1px solid gray; 
   }
 
   .main-content {
-    flex: 1; 
-    padding: 20px;
-    margin-left: 220px; 
+    flex-grow: 1;
+    padding: 20px; 
+    overflow-y: auto; 
   }
 }
-

@@ -1,19 +1,154 @@
 .manage-branch-container {
-    margin: 20px;
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-  }
-  
-  .actions {
-    display: flex;
-    margin-bottom: 10px;
-    flex-wrap: wrap;
-  }
-  
+  margin: 0px 20px 0 240px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+}
+
+.actions {
+  display: flex;
+  margin-bottom: 15px;
+  width: 100%;
+  justify-content: space-between;
+}
+
+.left-actions,
+.right-actions {
+  display: flex;
+  align-items: center;
+}
+
+.left-actions {
+  gap: 10px;
+  width: 70%; 
+  justify-content: flex-start; 
+}
+
+.right-actions {
+  gap: 10px;
+  width: 30%; 
+  justify-content: flex-end; 
+}
+
+.add-button {
+  background-color: rgb(38, 198, 249);
+  border: none;
+  border-radius: 50%;
+  padding: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin-right: 10px;
+}
+
+
+.add-button svg {
+  color: white;
+  font-size: 24px;
+}
+
+.search-container {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.search-icon {
+  font-size: 18px;
+  color: #888;
+  margin-right: 10px;
+}
+
+.actions input[type="text"] {
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  width: 100%; 
+}
+
+.actions input[type="text"]:focus {
+  outline: none; 
+}
+
+.actions button {
+  padding: 10px 20px;
+  color: grey;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  display: flex;
+  align-items: center;
+}
+
+.actions button svg { 
+  margin-right: 5px; 
+}
+
+.actions button:hover {
+  background-color: #0056b3;
+}
+
+.actions input[type="file"] {
+  margin-top: 10px;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.pagination button {
+  padding: 8px 16px;
+  margin: 0 5px;
+  border: 1px solid #ccc;
+  background-color: #f8f9fa;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.pagination button.active {
+  background-color: #007bff;
+  color: white;
+  border: none;
+}
+
+.pagination button:hover {
+  background-color: #0056b3;
+  color: white;
+}
+
+/* Responsive Design */
+@media screen and (max-width: 1200px) {
   .manage-branch-container {
-    margin: 20px;
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+    margin: 0 20px;
   }
+}
+
+@media screen and (max-width: 768px) {
+  .manage-branch-container {
+    margin: 0;
+    padding: 15px;
+  }
+
+  .actions {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .left-actions,
+  .right-actions {
+    width: 100%;
+    justify-content: center;
+    margin-bottom: 10px;
+  }
+
+  .pagination {
+    flex-direction: column;
+  }
+}

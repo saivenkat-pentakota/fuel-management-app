@@ -15,14 +15,14 @@ table {
 
 th, td {
   border: 1px solid #e0e0e0;
-  padding: 12px 16px;
   text-align: left;
 }
 
 th {
   background-color: #f8f9fa;
-  font-weight: 600;
-  color: #333;
+  font-weight: 700;
+  font-size: 18px;
+  color: rgb(38, 198, 249);
 }
 
 tr:hover {
@@ -46,22 +46,24 @@ td button {
   cursor: pointer;
   font-size: 14px;
   transition: background-color 0.3s ease;
+  display: inline-flex; /* Aligns icons in a row */
+  align-items: center; /* Ensures proper alignment of icons */
+  background-color: transparent; /* Removes background color */
 }
 
-td button:first-child {
-  background-color: #007bff;
-  color: #fff;
+/* Remove background color on hover */
+td button:hover {
+  background-color: transparent;
 }
 
-td button:first-child:hover {
-  background-color: #0056b3;
+td button:first-child .icon,
+td button:last-child .icon {
+  color: grey; /* Grey color for icons */
+  font-size: 18px;
 }
 
-td button:last-child {
-  background-color: #28a745;
-  color: #fff;
-}
-
-td button:last-child:hover {
-  background-color: #218838;
+/* Optional: Add spacing between the icons */
+td button:first-child .icon,
+td button:last-child .icon {
+  margin-right: 4px; /* Adjust spacing between icons */
 }

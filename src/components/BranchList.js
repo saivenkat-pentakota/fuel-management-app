@@ -1,15 +1,17 @@
 import React from 'react';
+import { AiOutlineEdit, AiOutlineEye, AiOutlineDelete } from 'react-icons/ai'; 
 import './BranchList.css';
 
-const BranchList = ({ branchData, onEdit, onView }) => {
+const BranchList = ({ branchData, onEdit, onView, onDelete }) => {
+  const handleDelete = (branchCode) => {
+    if (window.confirm("Are you sure you want to delete this branch?")) {
+      onDelete(branchCode);
+    }
+  };
 
-  if (typeof onEdit !== 'function' || typeof onView !== 'function') {
-    console.error("onEdit or onView is not a function");
-  }
   return (
     <div className="branch-list-container">
-      <h2>Branch List</h2>
-      <table>
+      <table className="branch-table">
         <thead>
           <tr>
             <th>#</th>
@@ -28,26 +30,39 @@ const BranchList = ({ branchData, onEdit, onView }) => {
           </tr>
         </thead>
         <tbody>
-          {branchData.map((branch, index) => (
-            <tr key={index}>
-              <td>{index + 1}</td>
-              <td>{branch.branchName}</td>
-              <td>{branch.branchCode}</td>
-              <td>{branch.branchShortName}</td>
-              <td>{branch.locality}</td>
-              <td>{branch.city}</td>
-              <td>{branch.state}</td>
-              <td>{branch.contactPerson}</td>
-              <td>{branch.contactPersonPhone}</td>
-              <td>{branch.panNo}</td>
-              <td>{branch.gstIn}</td>
-              <td>{branch.status}</td>
-              <td>
-              <button onClick={() => onEdit && onEdit(branch)}>Edit</button>
-              <button onClick={() => onView && onView(branch)}>View</button>
-              </td>
+          {branchData.length > 0 ? (
+            branchData.map((branch, index) => (
+              <tr key={index}>
+                <td>{index + 1}</td>
+                <td>{branch.branchName}</td>
+                <td>{branch.branchCode}</td>
+                <td>{branch.branchShortName}</td>
+                <td>{branch.locality}</td>
+                <td>{branch.city}</td>
+                <td>{branch.state}</td>
+                <td>{branch.contactPerson}</td>
+                <td>{branch.contactPersonPhone}</td>
+                <td>{branch.panNo}</td>
+                <td>{branch.gstIn}</td>
+                <td>{branch.status}</td>
+                <td>
+                  <button onClick={() => onEdit && onEdit(branch)} className="edit-btn">
+                    <AiOutlineEdit className="icon" /> {/* Edit Icon */}
+                  </button>
+                  <button onClick={() => onView && onView(branch)} className="view-btn">
+                    <AiOutlineEye className="icon" /> {/* View Icon */}
+                  </button>
+                  <button onClick={() => handleDelete(branch.branchCode)} className="delete-btn">
+                    <AiOutlineDelete className="icon" /> {/* Delete Icon */}
+                  </button>
+                </td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan="13" style={{ textAlign: 'center' }}>No branches found</td>
             </tr>
-          ))}
+          )}
         </tbody>
       </table>
     </div>

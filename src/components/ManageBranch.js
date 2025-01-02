@@ -1,64 +1,91 @@
-import React, { useState, useEffect } from 'react';
-import BranchList from './BranchList';
-import AddBranchModal from './AddBranchModal';
-import { useFullScreenHandle } from 'react-full-screen';
-import { saveAs } from 'file-saver';
+import React, { useState, useEffect } from "react";
+import BranchList from "./BranchList";
+import AddBranchModal from "./AddBranchModal";
+import { useFullScreenHandle } from "react-full-screen";
+import { saveAs } from "file-saver";
+import * as XLSX from "xlsx";
+import { AiOutlinePlusCircle, AiOutlineDownload, AiOutlineUpload, AiOutlineFullscreenExit, AiOutlineFullscreen, AiOutlineSearch } from "react-icons/ai";
+import { useNavigate } from "react-router-dom";
 
-import * as XLSX from 'xlsx';
-
-import './ManageBranch.css';
+import "./ManageBranch.css";
 
 const ManageBranch = () => {
   const [submittedData, setSubmittedData] = useState([]);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedBranch, setSelectedBranch] = useState(null); // To store the branch being edited/viewed
- 
+  const [selectedBranch, setSelectedBranch] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
+  const fullscreenHandle = useFullScreenHandle();
 
-  const fullscreenHandle = useFullScreenHandle(); // Initialize fullscreen handle
+  const navigate = useNavigate(); 
 
   useEffect(() => {
-    const storedData = localStorage.getItem('submittedData');
+    const sampleData = [
+      { 
+        branchCode: "001", 
+        branchName: "Sample Branch 1", 
+        branchShortName: "SB1", 
+        locality: "Downtown", 
+        city: "New York", 
+        state: "NY", 
+        contactPerson: "John Doe", 
+        contactPersonPhone: "123-456-7890", 
+        panNo: "ABCDE1234F", 
+        gstIn: "27ABCDE1234F1Z5", 
+        status: "Active" 
+      },
+      { 
+        branchCode: "002", 
+        branchName: "Sample Branch 2", 
+        branchShortName: "SB2", 
+        locality: "Uptown", 
+        city: "Los Angeles", 
+        state: "CA", 
+        contactPerson: "Jane Smith", 
+        contactPersonPhone: "234-567-8901", 
+        panNo: "FGHIJ5678K", 
+        gstIn: "29FGHIJ5678K1Z5", 
+        status: "Inactive" 
+      },
+      { 
+        branchCode: "003", 
+        branchName: "Sample Branch 3", 
+        branchShortName: "SB3", 
+        locality: "Midtown", 
+        city: "Chicago", 
+        state: "IL", 
+        contactPerson: "Bob Johnson", 
+        contactPersonPhone: "345-678-9012", 
+        panNo: "KLMNO9876P", 
+        gstIn: "30KLMNO9876P1Z6", 
+        status: "Active" 
+      },
+    ];
+  
+    const storedData = localStorage.getItem("submittedData");
     if (storedData) {
       setSubmittedData(JSON.parse(storedData));
+    } else {
+      setSubmittedData(sampleData);
     }
   }, []);
-
-  useEffect(() => {
-    localStorage.setItem('submittedData', JSON.stringify(submittedData));
-  }, [submittedData]);
-
-  const handleSearchChange = (event) => {
-    setSearchTerm(event.target.value);
-  };
-
-  const handleAddClick = () => {
-    setIsModalOpen(true);
-  };
-
-  const handleModalClose = () => {
-    setIsModalOpen(false);
-  };
+  
 
   const handleDownload = () => {
-    const csvData = submittedData.map((branch) =>
-      Object.values(branch) // Extract values for each branch object
-    );
-
-    const csvContent =
-      'data:text/csv;charset=utf-8,' + csvData.map((row) => row.join(',')).join('\n');
-
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8' });
-    saveAs(blob, 'branch_data.csv');
+    const csvData = submittedData.map((branch) => Object.values(branch));
+    const csvContent = "data:text/csv;charset=utf-8," + csvData.map((row) => row.join(",")).join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8" });
+    saveAs(blob, "branch_data.csv");
   };
 
   const handleFileUpload = (event) => {
     const file = event.target.files[0];
-    if (file && file.name.endsWith('.xlsx')) {
+    if (file && file.name.endsWith(".xlsx")) {
       const reader = new FileReader();
       reader.onload = (e) => {
         const abuf = e.target.result;
-        const wb = XLSX.read(abuf, { type: 'array' });
+        const wb = XLSX.read(abuf, { type: "array" });
         const sheet = wb.Sheets[wb.SheetNames[0]];
         const data = XLSX.utils.sheet_to_json(sheet);
         setSubmittedData(data);
@@ -67,63 +94,111 @@ const ManageBranch = () => {
     }
   };
 
-  // Filters the data based on the search term
+  const handleEdit = (branch) => {
+    setSelectedBranch(branch);
+    setIsModalOpen(true);
+  };
+
+  const handleView = (branch) => {
+    alert(`Viewing branch: ${JSON.stringify(branch)}`);
+    navigate(`/branch/${branch.branchCode}`); 
+  };
+
+  const handleDeleteBranch = (branchCode) => {
+    const updatedData = submittedData.filter((branch) => branch.branchCode !== branchCode);
+    setSubmittedData(updatedData);
+  };
+
+  const handleAddClick = () => {
+    setIsModalOpen(true); 
+    setSelectedBranch(null); 
+  };
+
+  const handleSearchChange = (event) => {
+    setSearchTerm(event.target.value); 
+  };
+
+  const handleModalClose = () => {
+    setIsModalOpen(false); 
+  };
+
   const filteredData = submittedData.filter((branch) =>
     branch.branchName.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // onEdit handler
-  const handleEdit = (branch) => {
-    setSelectedBranch(branch); // Set the branch to be edited
-    setIsModalOpen(true); // Open the modal
-  };
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
 
-  // onView handler
-  const handleView = (branch) => {
-    alert(`Viewing branch: ${JSON.stringify(branch)}`); // For simplicity, showing an alert with the branch info
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
   };
 
   return (
-    <div className="container">
+    <div className="manage-branch-container">
       <div className="main-content">
-        <h2>Manage Branch</h2>
+        <h2>Branch</h2>
         <div className="actions">
-          <button className="add-button" onClick={handleAddClick}>
-            +
-          </button>
-          <input
-            type="text"
-            placeholder="Search"
-            value={searchTerm}
-            onChange={handleSearchChange}
-          />
-          <button onClick={handleDownload}>Download</button>
-          {/* File upload button */}
-          <input type="file" onChange={handleFileUpload} />
-          <button onClick={fullscreenHandle.enterFullscreen}>
-            {fullscreenHandle.active ? 'Exit Fullscreen' : 'Fullscreen'}
-          </button>
+          <div className="left-actions">
+            <button className="add-button" onClick={handleAddClick}>
+              <AiOutlinePlusCircle />
+            </button>
+            <div className="search-container">
+              <AiOutlineSearch className="search-icon" />
+              <input
+                type="text"
+                placeholder="Search"
+                value={searchTerm}
+                onChange={handleSearchChange}
+              />
+            </div>
+          </div>
+          <div className="right-actions">
+            <button onClick={handleDownload}>
+              <AiOutlineDownload />
+            </button>
+            <label className="upload-label">
+              <AiOutlineUpload />
+              <input type="file" hidden onChange={handleFileUpload} />
+            </label>
+            <button onClick={fullscreenHandle.active ? fullscreenHandle.exit : fullscreenHandle.enter}>
+              {fullscreenHandle.active ? <AiOutlineFullscreenExit /> : <AiOutlineFullscreen />}
+            </button>
+          </div>
         </div>
+
         <AddBranchModal
           isOpen={isModalOpen}
           onClose={handleModalClose}
           onSubmit={(newBranch) => {
             if (selectedBranch) {
-              // If there's a selected branch, update it
               const updatedData = submittedData.map((branch) =>
                 branch.branchCode === selectedBranch.branchCode ? newBranch : branch
               );
               setSubmittedData(updatedData);
             } else {
-              // Otherwise, add a new branch
-              setSubmittedData([...submittedData, newBranch]);
+              setSubmittedData((prevData) => [...prevData, newBranch]);
             }
             setIsModalOpen(false);
-            setSelectedBranch(null); // Reset selected branch after submit
+            setSelectedBranch(null);
           }}
-          selectedBranch={selectedBranch} // Pass selected branch to the modal for editing
+          selectedBranch={selectedBranch}
         />
-        <BranchList branchData={filteredData} onEdit={handleEdit} onView={handleView} />
+
+        <BranchList branchData={currentItems} onEdit={handleEdit} onView={handleView} onDelete={handleDeleteBranch} />
+
+        <div className="pagination">
+          {Array.from({ length: totalPages }, (_, index) => (
+            <button
+              key={index + 1}
+              className={index + 1 === currentPage ? "active" : ""}
+              onClick={() => handlePageChange(index + 1)}
+            >
+              {index + 1}
+            </button>
+          ))}
+        </div>
       </div>
     </div>
   );

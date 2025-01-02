@@ -1,8 +1,7 @@
-import React, { useState,useEffect } from 'react';
-
+import React, { useState, useEffect } from 'react';
 import './AddBranchModal.css';
 
-const AddBranchModal = ({ isOpen, onClose, onSubmit, onEdit, onView, branchData,stateMap}) => {
+const AddBranchModal = ({ isOpen, onClose, onSubmit, onEdit, onView, branchData, stateMap }) => {
   const [branchDetails, setBranchDetails] = useState({
     branchCode: '',
     branchName: '',
@@ -15,8 +14,6 @@ const AddBranchModal = ({ isOpen, onClose, onSubmit, onEdit, onView, branchData,
     city: '',
     panNo: '',
     gstIn: '',
-    branch: '',
-    vehicleType: '',
   });
 
   const [contactDetails, setContactDetails] = useState({
@@ -65,7 +62,6 @@ const AddBranchModal = ({ isOpen, onClose, onSubmit, onEdit, onView, branchData,
 
   useEffect(() => {
     if (branchData) {
-      // If editing, populate form with branch data
       setBranchDetails(branchData.branchDetails || {});
       setContactDetails(branchData.contactDetails || {});
       setInchargeDetails(branchData.inchargeDetails || {});
@@ -78,31 +74,39 @@ const AddBranchModal = ({ isOpen, onClose, onSubmit, onEdit, onView, branchData,
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
-  
+
     if (name in branchDetails) {
-      setBranchDetails({ ...branchDetails, [name]: value });
+      setBranchDetails((prev) => ({ ...prev, [name]: value }));
     } else if (name in contactDetails) {
-      setContactDetails({ ...contactDetails, [name]: value });
+      setContactDetails((prev) => ({ ...prev, [name]: value }));
     } else if (name in inchargeDetails) {
-      setInchargeDetails({ ...inchargeDetails, [name]: value });
+      setInchargeDetails((prev) => ({ ...prev, [name]: value }));
     } else if (name in contactPersonDetails) {
-      setContactPersonDetails({ ...contactPersonDetails, [name]: value });
+      setContactPersonDetails((prev) => ({ ...prev, [name]: value }));
     } else if (name in openingDetails) {
-      setOpeningDetails({ ...openingDetails, [name]: value });
+      setOpeningDetails((prev) => ({ ...prev, [name]: value }));
     } else if (name in advanceRequestDetails) {
-      setAdvanceRequestDetails({ ...advanceRequestDetails, [name]: value });
+      setAdvanceRequestDetails((prev) => ({ ...prev, [name]: value }));
     } else if (name in bankDetails) {
-      setBankDetails({ ...bankDetails, [name]: value });
+      setBankDetails((prev) => ({ ...prev, [name]: value }));
     } else {
       console.warn(`Unexpected input name: ${name}`);
     }
   };
-  
-  
 
-  const handleSubmit = (event) => {
+  const validateForm = () => {
+    if (!branchDetails.branchName || !branchDetails.branchCode) {
+      alert('Branch Name and Branch Code are required!');
+      return false;
+    }
+    return true;
+  };
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    if (window.confirm("Are you sure you want to submit the form?")) {
+    if (!validateForm()) return;
+
+    try {
       const newBranch = {
         branchName: branchDetails.branchName,
         branchCode: branchDetails.branchCode,
@@ -116,19 +120,18 @@ const AddBranchModal = ({ isOpen, onClose, onSubmit, onEdit, onView, branchData,
         panNo: branchDetails.panNo,
         gstIn: branchDetails.gstIn,
       };
-      if(branchData){
-        onEdit(newBranch);
-      }else{
-        onSubmit(newBranch);
+
+      if (branchData) {
+        await onEdit(newBranch);
+      } else {
+        await onSubmit(newBranch);
       }
       onClose();
-    }
-
-    if (!branchDetails.branchName || !branchDetails.branchCode) {
-      alert("Branch Name and Branch Code are required!");
-      return;
+    } catch (error) {
+      console.error('Error submitting branch data:', error);
     }
   };
+
   const handleView = () => {
     onView(branchData);
     onClose();
@@ -478,24 +481,16 @@ const AddBranchModal = ({ isOpen, onClose, onSubmit, onEdit, onView, branchData,
               />
             </div>
           </div>
-          <div className="modal-buttons">
-            <button type="button" onClick={onClose} className="cancel-btn">
-              Cancel
-            </button>
-            <button type="submit" className="submit-btn">
-              {branchData ? 'Update Branch' : 'Add Branch'}
-            </button>
+          <div className="modal-footer">
+            <button type="button" onClick={onClose} className="cancel-btn">Cancel</button>
+            <button type="submit" className="submit-btn">{branchData ? 'Update' : 'Add'} Branch</button>
+            {branchData && (
+              <button type="button" onClick={handleView} className="view-btn">View Details</button>
+            )}
           </div>
         </form>
-        <div className="view-button">
-          {branchData && (
-            <button type="button" onClick={handleView} className="view-btn">
-              View Details
-            </button>
-          )}
-        </div>
       </div>
-    </div>  
+    </div>
   );
 };
 
