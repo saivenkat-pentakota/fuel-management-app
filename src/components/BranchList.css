@@ -1,19 +1,67 @@
 .branch-list-container {
-    margin-top: 20px;
-    overflow-x: auto;
-  }
-  
-  table {
-    border-collapse: collapse;
-    width: 100%;
-  }
-  
-  th, td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: left;
-  }
-  
-  th {
-    background-color: #f2f2f2;
-  }
+  margin-top: 20px;
+  overflow-x: auto;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 16px;
+}
+
+th, td {
+  border: 1px solid #e0e0e0;
+  padding: 12px 16px;
+  text-align: left;
+}
+
+th {
+  background-color: #f8f9fa;
+  font-weight: 600;
+  color: #333;
+}
+
+tr:hover {
+  background-color: #f1f1f1;
+}
+
+th:first-child, td:first-child {
+  text-align: center;
+  width: 50px;
+}
+
+td {
+  color: #555;
+}
+
+td button {
+  margin-right: 8px;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
+}
+
+td button:first-child {
+  background-color: #007bff;
+  color: #fff;
+}
+
+td button:first-child:hover {
+  background-color: #0056b3;
+}
+
+td button:last-child {
+  background-color: #28a745;
+  color: #fff;
+}
+
+td button:last-child:hover {
+  background-color: #218838;
+}

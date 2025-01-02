@@ -28,6 +28,12 @@
   transition: transform 0.3s ease-in-out;
 }
 
+.modal-form{
+  border: 1px solid #888;
+  border-radius: 8px;
+  padding: 10px;
+}
+
 .modal-content h2 {
   font-size: 1.75rem;
   color: #333;
@@ -48,6 +54,7 @@
   cursor: pointer;
   font-size: 1rem;
   margin-top: 20px;
+  margin-right: 10px;
   transition: background-color 0.3s ease;
 }
 
@@ -75,13 +82,26 @@
   color: #777;
 }
 
+.form-actions {
+  display: flex;
+  justify-content: flex-end; 
+  gap: 10px;
+}
+
+.form-actions button {
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+
 @media (max-width: 900px) {
   .input-group {
     justify-content: space-between;
   }
 
   .input-group input {
-    flex: 1 1 100%; /* For small screens, inputs take full width */
+    flex: 1 1 100%; 
     margin-bottom: 10px;
   }
 }

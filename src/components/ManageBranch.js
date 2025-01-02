@@ -3,7 +3,8 @@ import BranchList from './BranchList';
 import AddBranchModal from './AddBranchModal';
 import { useFullScreenHandle } from 'react-full-screen';
 import { saveAs } from 'file-saver';
-import * as XLSX from 'xlsx'; // Keep this import for file handling
+
+import * as XLSX from 'xlsx';
 
 import './ManageBranch.css';
 
@@ -11,6 +12,8 @@ const ManageBranch = () => {
   const [submittedData, setSubmittedData] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedBranch, setSelectedBranch] = useState(null); // To store the branch being edited/viewed
+ 
 
   const fullscreenHandle = useFullScreenHandle(); // Initialize fullscreen handle
 
@@ -25,23 +28,18 @@ const ManageBranch = () => {
     localStorage.setItem('submittedData', JSON.stringify(submittedData));
   }, [submittedData]);
 
-  // Handles the change in the search input field
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
   };
 
-
-  // Opens the modal to add a new branch
   const handleAddClick = () => {
     setIsModalOpen(true);
   };
 
-  // Closes the modal to add a new branch
   const handleModalClose = () => {
     setIsModalOpen(false);
   };
 
-  // Downloads the branch data as a CSV file
   const handleDownload = () => {
     const csvData = submittedData.map((branch) =>
       Object.values(branch) // Extract values for each branch object
@@ -54,7 +52,6 @@ const ManageBranch = () => {
     saveAs(blob, 'branch_data.csv');
   };
 
-  // Handles file upload (reads the file and processes it)
   const handleFileUpload = (event) => {
     const file = event.target.files[0];
     if (file && file.name.endsWith('.xlsx')) {
@@ -64,7 +61,7 @@ const ManageBranch = () => {
         const wb = XLSX.read(abuf, { type: 'array' });
         const sheet = wb.Sheets[wb.SheetNames[0]];
         const data = XLSX.utils.sheet_to_json(sheet);
-        setSubmittedData(data); // Assuming the data will match your branch data structure
+        setSubmittedData(data);
       };
       reader.readAsArrayBuffer(file);
     }
@@ -74,6 +71,17 @@ const ManageBranch = () => {
   const filteredData = submittedData.filter((branch) =>
     branch.branchName.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  // onEdit handler
+  const handleEdit = (branch) => {
+    setSelectedBranch(branch); // Set the branch to be edited
+    setIsModalOpen(true); // Open the modal
+  };
+
+  // onView handler
+  const handleView = (branch) => {
+    alert(`Viewing branch: ${JSON.stringify(branch)}`); // For simplicity, showing an alert with the branch info
+  };
 
   return (
     <div className="container">
@@ -100,11 +108,22 @@ const ManageBranch = () => {
           isOpen={isModalOpen}
           onClose={handleModalClose}
           onSubmit={(newBranch) => {
-            setSubmittedData([...submittedData, newBranch]);
+            if (selectedBranch) {
+              // If there's a selected branch, update it
+              const updatedData = submittedData.map((branch) =>
+                branch.branchCode === selectedBranch.branchCode ? newBranch : branch
+              );
+              setSubmittedData(updatedData);
+            } else {
+              // Otherwise, add a new branch
+              setSubmittedData([...submittedData, newBranch]);
+            }
             setIsModalOpen(false);
+            setSelectedBranch(null); // Reset selected branch after submit
           }}
+          selectedBranch={selectedBranch} // Pass selected branch to the modal for editing
         />
-        <BranchList branchData={filteredData} />
+        <BranchList branchData={filteredData} onEdit={handleEdit} onView={handleView} />
       </div>
     </div>
   );

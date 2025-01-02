@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
+
 import './AddBranchModal.css';
 
-const AddBranchModal = ({ isOpen, onClose, onSubmit }) => {
+const AddBranchModal = ({ isOpen, onClose, onSubmit, onEdit, onView, branchData,stateMap}) => {
   const [branchDetails, setBranchDetails] = useState({
     branchCode: '',
     branchName: '',
@@ -62,8 +63,22 @@ const AddBranchModal = ({ isOpen, onClose, onSubmit }) => {
     branchName: '',
   });
 
+  useEffect(() => {
+    if (branchData) {
+      // If editing, populate form with branch data
+      setBranchDetails(branchData.branchDetails || {});
+      setContactDetails(branchData.contactDetails || {});
+      setInchargeDetails(branchData.inchargeDetails || {});
+      setContactPersonDetails(branchData.contactPersonDetails || {});
+      setOpeningDetails(branchData.openingDetails || {});
+      setAdvanceRequestDetails(branchData.advanceRequestDetails || {});
+      setBankDetails(branchData.bankDetails || {});
+    }
+  }, [branchData]);
+
   const handleInputChange = (event) => {
     const { name, value } = event.target;
+  
     if (name in branchDetails) {
       setBranchDetails({ ...branchDetails, [name]: value });
     } else if (name in contactDetails) {
@@ -78,30 +93,52 @@ const AddBranchModal = ({ isOpen, onClose, onSubmit }) => {
       setAdvanceRequestDetails({ ...advanceRequestDetails, [name]: value });
     } else if (name in bankDetails) {
       setBankDetails({ ...bankDetails, [name]: value });
+    } else {
+      console.warn(`Unexpected input name: ${name}`);
     }
   };
+  
+  
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    const newBranch = {
-      branchName: branchDetails.branchName,
-      branchCode: branchDetails.branchCode,
-      street: branchDetails.street,
-      city: branchDetails.city,
-      pincode: branchDetails.pincode,
-      state: branchDetails.state,
-      panNo: branchDetails.panNo,
-      vehicleType: branchDetails.vehicleType,
-    };
-    onSubmit(newBranch);
+    if (window.confirm("Are you sure you want to submit the form?")) {
+      const newBranch = {
+        branchName: branchDetails.branchName,
+        branchCode: branchDetails.branchCode,
+        branchShortName: branchDetails.branchShortName,
+        locality: branchDetails.locality,
+        city: branchDetails.city,
+        state: branchDetails.state,
+        pincode: branchDetails.pincode,
+        contactPerson: contactPersonDetails.contactPersonName,
+        contactPersonPhone: contactPersonDetails.contactNo,
+        panNo: branchDetails.panNo,
+        gstIn: branchDetails.gstIn,
+      };
+      if(branchData){
+        onEdit(newBranch);
+      }else{
+        onSubmit(newBranch);
+      }
+      onClose();
+    }
+
+    if (!branchDetails.branchName || !branchDetails.branchCode) {
+      alert("Branch Name and Branch Code are required!");
+      return;
+    }
+  };
+  const handleView = () => {
+    onView(branchData);
     onClose();
   };
 
   return (
     <div className={`modal ${isOpen ? 'open' : ''}`}>
       <div className="modal-content">
-        <h2>Add Branch</h2>
-        <form onSubmit={handleSubmit}>
+      <h2>{branchData ? 'Edit Branch' : 'Add Branch'}</h2>
+        <form className="modal-form" onSubmit={handleSubmit}>
           <div className="section">
             <h3>Branch Details</h3>
             <div className="input-group">
@@ -111,7 +148,7 @@ const AddBranchModal = ({ isOpen, onClose, onSubmit }) => {
                 name="branchCode"
                 value={branchDetails.branchCode}
                 onChange={handleInputChange}
-                placeholder="Branch Code"
+                placeholder="Branch Code *"
               />
               <input
                 type="text"
@@ -119,7 +156,7 @@ const AddBranchModal = ({ isOpen, onClose, onSubmit }) => {
                 name="branchName"
                 value={branchDetails.branchName}
                 onChange={handleInputChange}
-                placeholder="Branch Name"
+                placeholder="Branch Name *"
               />
               <input
                 type="text"
@@ -198,24 +235,6 @@ const AddBranchModal = ({ isOpen, onClose, onSubmit }) => {
                 value={branchDetails.gstIn}
                 onChange={handleInputChange}
                 placeholder="GST In"
-              />
-              <input
-                type="text"
-                id="branch"
-                name="branch"
-                value={branchDetails.branch}
-                onChange={handleInputChange}
-                placeholder="Branch"
-              />
-            </div>
-            <div className="input-group">
-              <input
-                type="text"
-                id="vehicleType"
-                name="vehicleType"
-                value={branchDetails.vehicleType}
-                onChange={handleInputChange}
-                placeholder="Vehicle Type"
               />
             </div>
           </div>
@@ -313,35 +332,35 @@ const AddBranchModal = ({ isOpen, onClose, onSubmit }) => {
               />
               <input
                 type="text"
-                id="contactNo"
-                name="contactNo"
+                id="contactPersonContactNo"
+                name="contactPersonContactNo"
                 value={contactPersonDetails.contactNo}
                 onChange={handleInputChange}
-                placeholder="Contact Person No"
+                placeholder="Contact Person Contact No"
               />
+            </div>
+            <div className="input-group">
               <input
                 type="text"
                 id="whatsappNumber"
                 name="whatsappNumber"
                 value={contactPersonDetails.whatsappNumber}
                 onChange={handleInputChange}
-                placeholder="Whatsapp Number"
+                placeholder="Contact Person Whatsapp Number"
               />
-            </div>
-            <div className="input-group">
               <input
                 type="email"
                 id="emailId"
                 name="emailId"
                 value={contactPersonDetails.emailId}
                 onChange={handleInputChange}
-                placeholder="Email ID"
+                placeholder="Contact Person Email"
               />
             </div>
           </div>
 
           <div className="section">
-            <h3>Opening Balance Details</h3>
+            <h3>Opening Details</h3>
             <div className="input-group">
               <input
                 type="text"
@@ -365,7 +384,7 @@ const AddBranchModal = ({ isOpen, onClose, onSubmit }) => {
             <h3>Advance Request Details</h3>
             <div className="input-group">
               <input
-                type="number"
+                type="text"
                 id="minimumAmount"
                 name="minimumAmount"
                 value={advanceRequestDetails.minimumAmount}
@@ -373,7 +392,7 @@ const AddBranchModal = ({ isOpen, onClose, onSubmit }) => {
                 placeholder="Minimum Amount"
               />
               <input
-                type="number"
+                type="text"
                 id="maximumAmount"
                 name="maximumAmount"
                 value={advanceRequestDetails.maximumAmount}
@@ -383,7 +402,7 @@ const AddBranchModal = ({ isOpen, onClose, onSubmit }) => {
             </div>
             <div className="input-group">
               <input
-                type="number"
+                type="text"
                 id="monthlyMaximumAmount"
                 name="monthlyMaximumAmount"
                 value={advanceRequestDetails.monthlyMaximumAmount}
@@ -391,7 +410,7 @@ const AddBranchModal = ({ isOpen, onClose, onSubmit }) => {
                 placeholder="Monthly Maximum Amount"
               />
               <input
-                type="number"
+                type="text"
                 id="maximumUnsettledAmount"
                 name="maximumUnsettledAmount"
                 value={advanceRequestDetails.maximumUnsettledAmount}
@@ -459,16 +478,24 @@ const AddBranchModal = ({ isOpen, onClose, onSubmit }) => {
               />
             </div>
           </div>
-
-          <div className="form-actions">
-            <button type="submit">Add Branch</button>
-            <button type="button" onClick={onClose}>
+          <div className="modal-buttons">
+            <button type="button" onClick={onClose} className="cancel-btn">
               Cancel
+            </button>
+            <button type="submit" className="submit-btn">
+              {branchData ? 'Update Branch' : 'Add Branch'}
             </button>
           </div>
         </form>
+        <div className="view-button">
+          {branchData && (
+            <button type="button" onClick={handleView} className="view-btn">
+              View Details
+            </button>
+          )}
+        </div>
       </div>
-    </div>
+    </div>  
   );
 };
 
